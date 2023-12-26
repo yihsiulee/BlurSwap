@@ -264,6 +264,7 @@ contract BlurSwap is SpecialTransferHelper, Ownable, ReentrancyGuard {
             require(_isActive, "_trade: InActive Market");
             // execute trade
             if (
+                // OpenSea: Wyvern Exchange v1 or OpenSea: Wyvern Exchange v2 (both are stopped now)
                 _proxy == 0x7Be8076f4EA4A4AD08075C2508e481d6C946D12b ||
                 _proxy == 0x7f268357A8c2552623316e2562D90e642bB538E5
             ) {
@@ -271,6 +272,9 @@ contract BlurSwap is SpecialTransferHelper, Ownable, ReentrancyGuard {
                     _tradeDetails[i].tradeData
                 );
             } else {
+                // call seaport contract function here: 0x98661956ed6e2f5fc99c93d909ec28fdc3d48108
+                // delegatecall: to call another contract's function in this contract (will not change the msg.value and msg.sender)
+                // _tradeDetails[i].tradeData 應該就是這樣一個已經編碼的 bytes 數據，包含了要呼叫的函數簽名和參數。
                 (bool success, ) = _isLib
                     ? _proxy.delegatecall(_tradeDetails[i].tradeData)
                     : _proxy.call{value: _tradeDetails[i].value}(
